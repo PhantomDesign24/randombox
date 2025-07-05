@@ -9,45 +9,44 @@
  * 모달 기본
  * =================================== */
 
-.rb-modal {
+.rb-modal-overlay {
     display: none;
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.7);
+    background: rgba(0, 0, 0, 0.9);
     z-index: 9999;
-    backdrop-filter: blur(5px);
 }
 
-.rb-modal.active {
+.rb-modal-overlay.rb-active {
     display: flex;
     align-items: center;
     justify-content: center;
-    animation: fadeIn 0.3s ease;
+    animation: rbFadeIn 0.2s ease;
 }
 
-@keyframes fadeIn {
+@keyframes rbFadeIn {
     from { opacity: 0; }
     to { opacity: 1; }
 }
 
 /* 모달 컨텐츠 */
-.modal-content {
+.rb-modal-box {
     background: #fff;
-    border-radius: 16px;
-    max-width: 500px;
+    border-radius: 12px;
+    max-width: 460px;
     width: 90%;
     max-height: 90vh;
-    overflow: auto;
-    animation: slideIn 0.3s ease;
-    box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+    overflow: hidden;
+    animation: rbSlideIn 0.3s ease;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.2);
 }
 
-@keyframes slideIn {
+@keyframes rbSlideIn {
     from {
-        transform: translateY(-50px) scale(0.9);
+        transform: translateY(-20px) scale(0.98);
         opacity: 0;
     }
     to {
@@ -57,28 +56,32 @@
 }
 
 /* 모달 헤더 */
-.modal-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 24px;
-    border-bottom: 1px solid #e0e0e0;
+.rb-modal-head {
+    position: relative;
+    padding: 20px 24px;
+    background: #1a1a1a;
+    color: #fff;
 }
 
-.modal-header h3 {
+.rb-modal-title {
     margin: 0;
-    color: #2c3e50;
-    font-size: 20px;
+    font-size: 18px;
     font-weight: 600;
+    text-align: center;
+    letter-spacing: -0.3px;
 }
 
-.modal-close {
+.rb-modal-close-btn {
+    position: absolute;
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
     background: none;
     border: none;
-    font-size: 28px;
-    color: #999;
+    font-size: 20px;
+    color: #fff;
+    opacity: 0.8;
     cursor: pointer;
-    padding: 0;
     width: 32px;
     height: 32px;
     display: flex;
@@ -88,184 +91,203 @@
     transition: all 0.2s;
 }
 
-.modal-close:hover {
-    background: #f5f5f5;
-    color: #333;
+.rb-modal-close-btn:hover {
+    opacity: 1;
+    background: rgba(255,255,255,0.1);
 }
 
 /* 모달 바디 */
-.modal-body {
-    padding: 24px;
+.rb-modal-body {
+    padding: 32px 24px;
 }
 
 /* 모달 푸터 */
-.modal-footer {
+.rb-modal-foot {
     display: flex;
-    justify-content: flex-end;
     gap: 12px;
-    padding: 24px;
-    border-top: 1px solid #e0e0e0;
-    background: #f8f9fa;
+    padding: 0 24px 24px;
+    background: #fff;
+    border-radius: 0 0 12px 12px;
 }
 
-.modal-footer button {
-    padding: 12px 24px;
+.rb-modal-foot button {
+    flex: 1;
+    padding: 14px 24px;
     border: none;
     border-radius: 8px;
     font-size: 15px;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.2s;
+    letter-spacing: -0.3px;
 }
 
-.modal-footer .btn-primary {
-    background: #3498db;
+.rb-btn-confirm {
+    background: #1a1a1a;
     color: #fff;
 }
 
-.modal-footer .btn-primary:hover:not(:disabled) {
-    background: #2980b9;
+.rb-btn-confirm:hover:not(:disabled) {
+    background: #000;
 }
 
-.modal-footer .btn-secondary {
-    background: #e0e0e0;
+.rb-btn-confirm:disabled {
+    background: #ccc;
+    color: #999;
+    cursor: not-allowed;
+}
+
+.rb-btn-cancel {
+    background: #fff;
     color: #333;
+    border: 1px solid #e0e0e0;
 }
 
-.modal-footer .btn-secondary:hover {
-    background: #d0d0d0;
+.rb-btn-cancel:hover {
+    background: #f8f8f8;
+    border-color: #ccc;
 }
 
 /* ===================================
  * 구매 확인 모달
  * =================================== */
 
-.purchase-info {
-    display: flex;
-    gap: 24px;
-    margin-bottom: 24px;
+.rb-purchase-wrap {
+    text-align: center;
 }
 
-.box-preview {
-    width: 140px;
-    height: 140px;
-    background: #f5f7fa;
-    border-radius: 12px;
+.rb-box-thumb {
+    width: 160px;
+    height: 160px;
+    background: #f8f8f8;
+    border-radius: 16px;
     display: flex;
     align-items: center;
     justify-content: center;
-    flex-shrink: 0;
+    margin: 0 auto 28px;
     border: 1px solid #e0e0e0;
 }
 
-.box-preview img {
-    max-width: 120px;
-    max-height: 120px;
+.rb-box-thumb img {
+    max-width: 130px;
+    max-height: 130px;
     object-fit: contain;
 }
 
-.purchase-details {
-    flex: 1;
+.rb-purchase-info {
+    text-align: left;
 }
 
-.purchase-details h4 {
-    margin: 0 0 16px;
-    color: #2c3e50;
-    font-size: 18px;
-    font-weight: 600;
+.rb-purchase-name {
+    margin: 0 0 20px;
+    color: #1a1a1a;
+    font-size: 20px;
+    font-weight: 700;
+    text-align: center;
+    letter-spacing: -0.5px;
 }
 
-.price-info {
-    background: #f8f9fa;
-    padding: 16px;
-    border-radius: 8px;
-    border: 1px solid #e0e0e0;
+.rb-price-table {
+    background: #f8f8f8;
+    padding: 20px;
+    border-radius: 12px;
 }
 
-.price-row {
+.rb-price-line {
     display: flex;
     justify-content: space-between;
-    margin-bottom: 10px;
+    align-items: center;
+    margin-bottom: 14px;
     font-size: 14px;
 }
 
-.price-row:last-child {
+.rb-price-line:last-child {
     margin-bottom: 0;
 }
 
-.price-row span:first-child {
+.rb-price-label {
     color: #666;
+    font-weight: 500;
 }
 
-.price-row span:last-child {
+.rb-price-value {
     font-weight: 600;
-    color: #333;
-}
-
-.price-row.total {
-    margin-top: 10px;
-    padding-top: 10px;
-    border-top: 1px solid #e0e0e0;
-    font-size: 16px;
-}
-
-.price-row.total span:last-child {
-    color: #2c3e50;
-}
-
-.confirm-message {
-    text-align: center;
-    color: #666;
-    margin: 0;
+    color: #1a1a1a;
     font-size: 15px;
+}
+
+.rb-price-line.rb-total {
+    margin-top: 14px;
+    padding-top: 14px;
+    border-top: 1px solid #e0e0e0;
+}
+
+.rb-price-line.rb-total .rb-price-label {
+    color: #1a1a1a;
+    font-weight: 600;
+    font-size: 15px;
+}
+
+.rb-price-line.rb-total .rb-price-value {
+    font-size: 18px;
+    font-weight: 700;
+}
+
+.rb-error-msg {
+    text-align: center;
+    color: #e74c3c;
+    margin: 16px 0 0;
+    font-size: 13px;
+    line-height: 1.5;
 }
 
 /* ===================================
  * 결과 모달
  * =================================== */
 
-.modal-result {
-    overflow: hidden;
-}
-
-.modal-result .modal-body {
+.rb-result-modal .rb-modal-body {
     padding: 0;
 }
 
-.result-animation {
+.rb-result-modal .rb-modal-foot {
+    justify-content: center;
+    padding: 20px 24px 24px;
+}
+
+.rb-result-stage {
     min-height: 450px;
     display: flex;
     align-items: center;
     justify-content: center;
     position: relative;
-    background: radial-gradient(ellipse at center, #f5f7fa 0%, #fff 100%);
+    background: #fafafa;
 }
 
 /* 박스 오픈 애니메이션 */
-.box-opening {
+.rb-box-opening {
     text-align: center;
 }
 
-.box-opening img {
+.rb-box-opening img {
     width: 200px;
     height: 200px;
-    animation: shake 0.5s ease-in-out infinite;
+    animation: rbShake 0.5s ease-in-out infinite;
 }
 
-@keyframes shake {
+@keyframes rbShake {
     0%, 100% { transform: rotate(0deg); }
-    25% { transform: rotate(-5deg); }
-    75% { transform: rotate(5deg); }
+    25% { transform: rotate(-3deg); }
+    75% { transform: rotate(3deg); }
 }
 
 /* 결과 아이템 */
-.result-item {
+.rb-result-display {
     text-align: center;
     padding: 40px;
-    animation: zoomIn 0.5s ease;
+    animation: rbZoomIn 0.5s ease;
 }
 
-@keyframes zoomIn {
+@keyframes rbZoomIn {
     from {
         transform: scale(0);
         opacity: 0;
@@ -276,7 +298,7 @@
     }
 }
 
-.item-grade-effect {
+.rb-grade-effect {
     position: absolute;
     top: 0;
     left: 0;
@@ -285,95 +307,84 @@
     pointer-events: none;
 }
 
-.result-item img {
-    width: 200px;
-    height: 200px;
+.rb-result-img {
+    width: 180px;
+    height: 180px;
     object-fit: contain;
     margin-bottom: 24px;
+    background: #fff;
+    border-radius: 16px;
+    padding: 20px;
+    border: 1px solid #e0e0e0;
 }
 
-.result-item h3 {
-    font-size: 24px;
-    color: #2c3e50;
+.rb-result-name {
+    font-size: 22px;
+    color: #1a1a1a;
     margin: 0 0 12px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+}
+
+.rb-result-grade {
+    display: inline-block;
+    font-size: 14px;
+    margin-bottom: 16px;
+    padding: 6px 20px;
+    border-radius: 20px;
     font-weight: 600;
 }
 
-.result-item .item-grade {
+.rb-result-point {
     font-size: 16px;
-    margin-bottom: 12px;
-    padding: 6px 20px;
-    display: inline-block;
-}
-
-.result-item .item-value {
-    font-size: 18px;
     color: #27ae60;
     font-weight: 600;
 }
 
-.result-item .item-value::before {
-    content: '💰 ';
-}
-
 /* 파티클 효과 */
-.particle {
+.rb-particle {
     position: absolute;
     pointer-events: none;
     opacity: 1;
+    border-radius: 50%;
+}
+
+/* 등급별 스타일 */
+.rb-grade-normal {
+    background: #f0f0f0;
+    color: #666;
+}
+
+.rb-grade-rare {
+    background: #e3f2fd;
+    color: #1976d2;
+}
+
+.rb-grade-epic {
+    background: #f3e5f5;
+    color: #7b1fa2;
+}
+
+.rb-grade-legendary {
+    background: #fff3e0;
+    color: #f57c00;
 }
 
 /* 등급별 배경 효과 */
-.effect-legendary {
-    background: radial-gradient(circle at center, rgba(255,215,0,0.3) 0%, transparent 70%);
-    animation: pulse-gold 2s infinite;
+.rb-effect-legendary {
+    background: radial-gradient(circle at center, rgba(255,193,7,0.1) 0%, transparent 70%);
 }
 
-.effect-epic {
-    background: radial-gradient(circle at center, rgba(155,89,182,0.3) 0%, transparent 70%);
-    animation: pulse-purple 2s infinite;
+.rb-effect-epic {
+    background: radial-gradient(circle at center, rgba(156,39,176,0.1) 0%, transparent 70%);
 }
 
-.effect-rare {
-    background: radial-gradient(circle at center, rgba(52,152,219,0.3) 0%, transparent 70%);
-    animation: pulse-blue 2s infinite;
+.rb-effect-rare {
+    background: radial-gradient(circle at center, rgba(33,150,243,0.1) 0%, transparent 70%);
 }
 
-.effect-normal {
-    background: radial-gradient(circle at center, rgba(149,165,166,0.2) 0%, transparent 70%);
-}
-
-@keyframes pulse-gold {
-    0%, 100% { 
-        opacity: 0.5; 
-        transform: scale(1);
-    }
-    50% { 
-        opacity: 0.8; 
-        transform: scale(1.1);
-    }
-}
-
-@keyframes pulse-purple {
-    0%, 100% { 
-        opacity: 0.5; 
-        transform: scale(1);
-    }
-    50% { 
-        opacity: 0.8; 
-        transform: scale(1.05);
-    }
-}
-
-@keyframes pulse-blue {
-    0%, 100% { 
-        opacity: 0.5; 
-        transform: scale(1);
-    }
-    50% { 
-        opacity: 0.8; 
-        transform: scale(1.02);
-    }
+.rb-effect-normal {
+    background: transparent;
 }
 
 /* ===================================
@@ -381,22 +392,107 @@
  * =================================== */
 
 @media (max-width: 768px) {
-    .modal-content {
+    .rb-modal-box {
         width: 95%;
-        margin: 20px;
+        margin: 10px;
+        max-width: 100%;
     }
     
-    .purchase-info {
-        flex-direction: column;
-        align-items: center;
+    .rb-modal-head {
+        padding: 18px 20px;
     }
     
-    .box-preview {
+    .rb-modal-title {
+        font-size: 16px;
+    }
+    
+    .rb-modal-body {
+        padding: 24px 20px;
+    }
+    
+    .rb-box-thumb {
+        width: 140px;
+        height: 140px;
         margin-bottom: 20px;
     }
     
-    .result-item img {
+    .rb-box-thumb img {
+        max-width: 110px;
+        max-height: 110px;
+    }
+    
+    .rb-purchase-name {
+        font-size: 18px;
+    }
+    
+    .rb-price-table {
+        padding: 16px;
+    }
+    
+    .rb-price-line {
+        font-size: 13px;
+    }
+    
+    .rb-price-value {
+        font-size: 14px;
+    }
+    
+    .rb-price-line.rb-total .rb-price-value {
+        font-size: 16px;
+    }
+    
+    .rb-modal-foot {
+        padding: 0 20px 20px;
+        gap: 10px;
+    }
+    
+    .rb-modal-foot button {
+        padding: 12px 20px;
+        font-size: 14px;
+        min-width: 0;
+    }
+    
+    .rb-result-modal .rb-modal-foot {
+        padding: 16px 20px 20px;
+    }
+    
+    .rb-result-display {
+        padding: 30px 20px;
+    }
+    
+    .rb-result-img {
         width: 150px;
         height: 150px;
     }
+    
+    .rb-result-name {
+        font-size: 20px;
+    }
+}
+
+/* 추가 유틸리티 */
+.rb-insufficient .rb-price-value {
+    color: #e74c3c !important;
+}
+
+/* 로딩 애니메이션 */
+.rb-btn-confirm:disabled {
+    position: relative;
+    overflow: hidden;
+}
+
+.rb-btn-confirm:disabled::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+    animation: rbLoading 1.5s infinite;
+}
+
+@keyframes rbLoading {
+    0% { left: -100%; }
+    100% { left: 100%; }
 }
