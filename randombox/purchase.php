@@ -1,18 +1,19 @@
 <?php
 /*
  * 파일명: purchase.php
- * 위치: /randombox/
+ * 위치: /randombox/ajax/
  * 기능: 랜덤박스 구매 처리 (AJAX)
  * 작성일: 2025-01-04
  */
 
-include_once('./_common.php');
+include_once('../../common.php');
+include_once(G5_PLUGIN_PATH.'/randombox/randombox.lib.php');
 
 // ===================================
 // AJAX 전용
 // ===================================
 
-header('Content-Type: application/json');
+header('Content-Type: application/json; charset=utf-8');
 
 $response = array(
     'status' => false,
@@ -23,6 +24,13 @@ $response = array(
 // POST 요청만 허용
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     $response['msg'] = '잘못된 접근입니다.';
+    echo json_encode($response);
+    exit;
+}
+
+// 로그인 체크
+if (!$member['mb_id']) {
+    $response['msg'] = '로그인이 필요합니다.';
     echo json_encode($response);
     exit;
 }
@@ -54,7 +62,7 @@ if ($result['status']) {
     if ($item['rbi_image'] && file_exists(G5_DATA_PATH.'/randombox/item/'.$item['rbi_image'])) {
         $item['image'] = G5_DATA_URL.'/randombox/item/'.$item['rbi_image'];
     } else {
-        $item['image'] = './img/item-default.png';
+        $item['image'] = G5_URL.'/randombox/img/item-default.png';
     }
     
     $response['status'] = true;
@@ -70,5 +78,5 @@ if ($result['status']) {
 // 결과 반환
 // ===================================
 
-echo json_encode($response);
+echo json_encode($response, JSON_UNESCAPED_UNICODE);
 ?>
