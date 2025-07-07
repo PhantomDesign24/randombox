@@ -528,9 +528,64 @@ function get_recent_winners($limit = 10) {
     return $list;
 }
 
-// ===================================
-// 유틸리티 함수
-// ===================================
+/**
+ * 모든 등급 정보 가져오기
+ * 
+ * @return array
+ */
+function get_all_grades() {
+    global $g5;
+    
+    static $grades = null;
+    
+    if ($grades === null) {
+        $grades = array();
+        // 테이블명 수정: randombox_grades (접두어 제거)
+        $sql = "SELECT * FROM randombox_grades ORDER BY rbg_order, rbg_id";
+        $result = sql_query($sql);
+        
+        while ($row = sql_fetch_array($result)) {
+            $grades[$row['rbg_key']] = $row;
+        }
+    }
+    
+    return $grades;
+}
+
+/**
+ * 특정 등급 정보 가져오기
+ * 
+ * @param string $grade_key 등급 키
+ * @return array|null
+ */
+function get_grade_info($grade_key) {
+    $grades = get_all_grades();
+    return isset($grades[$grade_key]) ? $grades[$grade_key] : null;
+}
+
+/**
+ * 희귀 등급 목록 가져오기
+ * 
+ * @return array
+ */
+function get_rare_grades() {
+    global $g5;
+    
+    // 희귀 등급 최소 레벨 가져오기
+    $rare_min_level = get_randombox_config('rare_min_level');
+    if (!$rare_min_level) $rare_min_level = 2; // 기본값
+    
+    $rare_grades = array();
+    // 테이블명 수정: randombox_grades (접두어 제거)
+    $sql = "SELECT rbg_key FROM randombox_grades WHERE rbg_level >= {$rare_min_level}";
+    $result = sql_query($sql);
+    
+    while ($row = sql_fetch_array($result)) {
+        $rare_grades[] = $row['rbg_key'];
+    }
+    
+    return $rare_grades;
+}
 
 /**
  * 등급별 색상 클래스 반환
@@ -539,14 +594,7 @@ function get_recent_winners($limit = 10) {
  * @return string
  */
 function get_grade_class($grade) {
-    $classes = array(
-        'normal' => 'grade-normal',
-        'rare' => 'grade-rare',
-        'epic' => 'grade-epic',
-        'legendary' => 'grade-legendary'
-    );
-    
-    return isset($classes[$grade]) ? $classes[$grade] : 'grade-normal';
+    return 'grade-' . $grade;
 }
 
 /**
@@ -556,14 +604,30 @@ function get_grade_class($grade) {
  * @return string
  */
 function get_grade_name($grade) {
-    $names = array(
-        'normal' => '일반',
-        'rare' => '레어',
-        'epic' => '에픽',
-        'legendary' => '레전더리'
-    );
-    
-    return isset($names[$grade]) ? $names[$grade] : '일반';
+    $grade_info = get_grade_info($grade);
+    return $grade_info ? $grade_info['rbg_name'] : '알 수 없음';
+}
+
+/**
+ * 등급별 색상 반환
+ * 
+ * @param string $grade 등급
+ * @return string
+ */
+function get_grade_color($grade) {
+    $grade_info = get_grade_info($grade);
+    return $grade_info ? $grade_info['rbg_color'] : '#000000';
+}
+
+/**
+ * 등급별 아이콘 반환
+ * 
+ * @param string $grade 등급
+ * @return string
+ */
+function get_grade_icon($grade) {
+    $grade_info = get_grade_info($grade);
+    return $grade_info ? $grade_info['rbg_icon'] : '';
 }
 
 /**
@@ -581,4 +645,5 @@ function get_box_type_name($type) {
     
     return isset($names[$type]) ? $names[$type] : '일반';
 }
+
 ?>

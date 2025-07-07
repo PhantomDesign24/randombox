@@ -49,8 +49,8 @@ if ($sfl == 'rb_type') {
 // 데이터 조회
 // ===================================
 
-/* 전체 개수 */
-$sql = "SELECT COUNT(*) as cnt FROM {$g5['g5_prefix']}randombox WHERE 1 {$sql_search}";
+/* 전체 개수 - 테이블명 수정 */
+$sql = "SELECT COUNT(*) as cnt FROM randombox WHERE 1 {$sql_search}";
 $row = sql_fetch($sql);
 $total_count = $row['cnt'];
 
@@ -58,8 +58,8 @@ $total_count = $row['cnt'];
 $total_page = ceil($total_count / $rows);
 $from_record = ($page - 1) * $rows;
 
-/* 목록 조회 */
-$sql = "SELECT * FROM {$g5['g5_prefix']}randombox 
+/* 목록 조회 - 테이블명 수정 */
+$sql = "SELECT * FROM randombox 
         WHERE 1 {$sql_search} 
         ORDER BY rb_order, rb_id DESC 
         LIMIT {$from_record}, {$rows}";

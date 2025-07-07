@@ -6,7 +6,7 @@
  * 작성일: 2025-01-04
  */
 
-include_once('../../common.php');
+include_once('./_common.php');
 include_once(G5_PLUGIN_PATH.'/randombox/randombox.lib.php');
 
 // ===================================
