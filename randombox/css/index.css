@@ -1,550 +1,678 @@
 /*
  * 파일명: index.css
  * 위치: /randombox/css/
- * 기능: 메인 페이지 스타일
+ * 기능: 메인 페이지 모던 블랙&화이트 스타일
  * 작성일: 2025-07-17
  */
 
 /* ===================================
  * 컨테이너
  * =================================== */
-.rb-index-container {
+.randombox-container {
     max-width: 1400px;
     margin: 0 auto;
+    padding: 20px;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
 /* ===================================
- * 통계 바
+ * 상단 정보 바
  * =================================== */
-.rb-stats-bar {
-    display: grid;
-    grid-template-columns: repeat(6, 1fr);
-    gap: 1px;
-    background: #e0e0e0;
-    margin-bottom: 20px;
+.rb-top-bar {
+    background: #000;
+    margin: -20px -20px 24px;
+    padding: 20px 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-.rb-stat {
+.rb-logo {
+    font-size: 20px;
+    font-weight: 800;
+    color: #fff;
+    letter-spacing: -0.5px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.rb-logo i {
+    font-size: 24px;
+}
+
+.rb-user-info {
+    display: flex;
+    align-items: center;
+    gap: 32px;
+}
+
+.point-display {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: rgba(255, 255, 255, 0.1);
+    padding: 10px 20px;
+    border-radius: 100px;
+    backdrop-filter: blur(10px);
+}
+
+.point-label {
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.7);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.point-value {
+    font-size: 20px;
+    font-weight: 700;
+    color: #fff;
+}
+
+.user-menu {
+    display: flex;
+    gap: 12px;
+}
+
+.menu-item {
+    padding: 10px 16px;
     background: #fff;
-    padding: 20px;
-    text-align: center;
-}
-
-.rb-stat-label {
-    display: block;
+    color: #000;
+    text-decoration: none;
     font-size: 12px;
-    color: #666;
+    font-weight: 600;
+    border-radius: 4px;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
     text-transform: uppercase;
     letter-spacing: 0.5px;
-    margin-bottom: 8px;
 }
 
-.rb-stat-value {
-    display: block;
-    font-size: 24px;
-    font-weight: 700;
+.menu-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(255, 255, 255, 0.2);
+}
+
+.menu-item i {
+    font-size: 14px;
+}
+
+/* ===================================
+ * 메인 그리드
+ * =================================== */
+.main-grid {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    gap: 24px;
+}
+
+/* ===================================
+ * 사이드바 통계
+ * =================================== */
+.sidebar-stats {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.stat-block {
+    background: #fff;
+    padding: 24px;
+    border: 1px solid #e5e5e5;
+    transition: all 0.3s;
+    position: relative;
+    overflow: hidden;
+}
+
+.stat-block::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 4px;
+    height: 100%;
+    background: #000;
+    transition: width 0.3s;
+}
+
+.stat-block:hover {
+    border-color: #000;
+    transform: translateX(4px);
+}
+
+.stat-block:hover::before {
+    width: 8px;
+}
+
+.stat-icon {
+    width: 40px;
+    height: 40px;
+    background: #f5f5f5;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 12px;
+    font-size: 20px;
     color: #000;
 }
 
-.rb-stat-value.text-success {
-    color: #27ae60;
+.stat-block h4 {
+    font-size: 11px;
+    font-weight: 600;
+    color: #666;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin: 0 0 8px;
 }
 
-.rb-stat-value.text-danger {
-    color: #e74c3c;
+.stat-number {
+    font-size: 32px;
+    font-weight: 800;
+    color: #000;
+    line-height: 1;
 }
 
-/* ===================================
- * 레이아웃
- * =================================== */
-.rb-layout {
-    display: grid;
-    grid-template-columns: 1fr 300px;
-    gap: 20px;
+.stat-sub {
+    font-size: 11px;
+    color: #999;
+    margin-top: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* 실시간 당첨 */
+.realtime-block {
+    padding: 16px;
+}
+
+.realtime-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 12px;
+}
+
+.realtime-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px;
+    background: #f8f8f8;
+    border-radius: 4px;
+}
+
+.realtime-grade {
+    width: 4px;
+    height: 24px;
+    background: #e0e0e0;
+    border-radius: 2px;
+}
+
+.realtime-grade.rare {
+    background: #3498db;
+}
+
+.realtime-grade.epic {
+    background: #9b59b6;
+}
+
+.realtime-grade.legendary {
+    background: #e74c3c;
+}
+
+.realtime-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.realtime-user {
+    font-size: 11px;
+    font-weight: 600;
+    color: #000;
+}
+
+.realtime-prize {
+    font-size: 10px;
+    color: #666;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.realtime-time {
+    font-size: 10px;
+    color: #999;
+}
+
+.no-data {
+    text-align: center;
+    color: #999;
+    font-size: 11px;
+    padding: 20px 0;
 }
 
 /* ===================================
  * 박스 섹션
  * =================================== */
-.rb-box-section {
+.box-section {
     background: #fff;
-    border: 1px solid #e0e0e0;
-    border-radius: 8px;
-    overflow: hidden;
+    border: 1px solid #e5e5e5;
 }
 
-/* 섹션 헤더 */
-.rb-section-header {
-    padding: 20px;
-    border-bottom: 1px solid #e0e0e0;
+.section-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    padding: 20px 24px;
+    border-bottom: 1px solid #e5e5e5;
 }
 
-.rb-section-title {
-    font-size: 18px;
-    font-weight: 700;
+.section-title {
+    font-size: 20px;
+    font-weight: 800;
     color: #000;
     margin: 0;
-}
-
-/* 필터 탭 */
-.rb-filter-tabs {
     display: flex;
-    gap: 4px;
-    background: #f0f0f0;
-    padding: 4px;
-    border-radius: 6px;
+    align-items: center;
+    gap: 10px;
 }
 
-.rb-filter-tab {
-    padding: 8px 16px;
-    background: transparent;
-    border: none;
-    color: #666;
-    font-size: 13px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s;
+.section-title i {
+    font-size: 24px;
+}
+
+/* 뷰 옵션 */
+.view-options {
+    display: flex;
+    gap: 0;
+    background: #f5f5f5;
+    padding: 4px;
     border-radius: 4px;
 }
 
-.rb-filter-tab:hover {
-    background: rgba(0,0,0,0.05);
+.view-btn {
+    padding: 8px;
+    background: transparent;
+    border: none;
+    color: #666;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.3s;
+    border-radius: 3px;
 }
 
-.rb-filter-tab.active {
+.view-btn:hover {
+    color: #000;
+}
+
+.view-btn.active {
     background: #000;
     color: #fff;
+}
+
+/* 필터 바 */
+.filter-bar {
+    padding: 16px 24px;
+    background: #fafafa;
+    border-bottom: 1px solid #e5e5e5;
+    display: flex;
+    gap: 12px;
+}
+
+.filter-chip {
+    padding: 8px 16px;
+    background: #fff;
+    border: 1px solid #e0e0e0;
+    color: #666;
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-radius: 4px;
+}
+
+.filter-chip:hover {
+    border-color: #000;
+    color: #000;
+}
+
+.filter-chip.active {
+    background: #000;
+    color: #fff;
+    border-color: #000;
 }
 
 /* 박스 그리드 */
 .rb-box-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
     gap: 20px;
-    padding: 20px;
+    padding: 24px;
 }
 
 /* 박스 카드 */
 .rb-box-card {
     background: #fff;
-    border: 1px solid #e0e0e0;
-    border-radius: 8px;
+    border: 1px solid #e5e5e5;
     position: relative;
     transition: all 0.3s;
     overflow: hidden;
 }
 
 .rb-box-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+    transform: translateY(-8px);
+    box-shadow: 0 16px 32px rgba(0, 0, 0, 0.1);
+    border-color: #000;
 }
 
-/* 박스 배지 */
-.rb-box-badge {
-    position: absolute;
-    top: 12px;
-    right: 12px;
-    padding: 4px 12px;
+/* 타입 인디케이터 */
+.box-type-indicator {
+    height: 3px;
     background: #000;
-    color: #fff;
-    font-size: 11px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    border-radius: 4px;
-    z-index: 2;
 }
 
-.rb-box-badge.premium {
-    background: linear-gradient(135deg, #FFD700, #FFA500);
-    color: #000;
+.rb-box-card.type-premium .box-type-indicator {
+    background: linear-gradient(90deg, #FFD700, #FFA500);
 }
 
-.rb-box-badge.event {
-    background: linear-gradient(135deg, #FF4444, #FF6B6B);
-}
-
-/* 박스 링크 */
-.rb-box-link {
-    display: block;
-    text-decoration: none;
-    color: inherit;
+.rb-box-card.type-event .box-type-indicator {
+    background: linear-gradient(90deg, #FF4757, #ff6348);
 }
 
 /* 박스 이미지 */
-.rb-box-image {
-    height: 180px;
+.box-image {
+    position: relative;
+    height: 200px;
     background: #f8f8f8;
     display: flex;
     align-items: center;
     justify-content: center;
     padding: 20px;
-    position: relative;
     overflow: hidden;
+    cursor: pointer;
 }
 
-.rb-box-image img {
+.box-image img {
     max-width: 100%;
     max-height: 100%;
     object-fit: contain;
     transition: transform 0.3s;
 }
 
-.rb-box-card:hover .rb-box-image img {
-    transform: scale(1.05);
+.rb-box-card:hover .box-image img {
+    transform: scale(1.1);
 }
 
-/* 호버 오버레이 */
-.rb-box-overlay {
+/* 박스 라벨 */
+.box-label {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    padding: 6px 12px;
+    background: #000;
+    color: #fff;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.box-label i {
+    font-size: 10px;
+}
+
+.box-label.premium {
+    background: linear-gradient(135deg, #FFD700, #FFA500);
+    color: #000;
+}
+
+.box-label.event {
+    background: linear-gradient(135deg, #FF4757, #ff6348);
+}
+
+/* 박스 오버레이 */
+.box-overlay {
     position: absolute;
     top: 0;
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(0,0,0,0.8);
+    background: rgba(0, 0, 0, 0.9);
     display: flex;
-    flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 8px;
     opacity: 0;
     transition: opacity 0.3s;
 }
 
-.rb-box-card:hover .rb-box-overlay {
+.rb-box-card:hover .box-overlay {
     opacity: 1;
 }
 
-.rb-box-overlay i {
-    font-size: 32px;
-    color: #fff;
+.quick-view-btn {
+    padding: 12px 24px;
+    background: #fff;
+    color: #000;
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
 }
 
-.rb-box-overlay span {
-    color: #fff;
-    font-size: 14px;
-    font-weight: 600;
+.quick-view-btn i {
+    font-size: 16px;
 }
 
 /* 박스 정보 */
-.rb-box-info {
-    padding: 16px;
+.box-info {
+    padding: 20px;
 }
 
-.rb-box-name {
+.box-name {
     font-size: 16px;
     font-weight: 700;
-    margin: 0 0 12px;
-}
-
-.rb-box-name a {
     color: #000;
-    text-decoration: none;
-    transition: color 0.2s;
-}
-
-.rb-box-name a:hover {
-    color: #666;
+    margin: 0 0 12px;
+    line-height: 1.4;
 }
 
 /* 박스 메타 */
-.rb-box-meta {
+.box-meta {
     display: flex;
     flex-wrap: wrap;
-    gap: 12px;
-    margin-bottom: 16px;
-    font-size: 13px;
-    color: #666;
+    gap: 16px;
+    margin-bottom: 20px;
 }
 
-.rb-box-meta-item {
+.meta-item {
     display: flex;
     align-items: center;
-    gap: 4px;
+    gap: 6px;
+    font-size: 11px;
+    color: #666;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
-.rb-box-meta-item i {
-    font-size: 14px;
+.meta-item i {
+    font-size: 12px;
 }
 
-.rb-box-meta-item.text-danger {
+.meta-item.text-danger {
     color: #e74c3c;
     font-weight: 600;
 }
 
 /* 박스 푸터 */
-.rb-box-footer {
+.box-footer {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding-top: 16px;
+    padding-top: 20px;
     border-top: 1px solid #f0f0f0;
 }
 
-.rb-box-price {
-    font-size: 20px;
-    font-weight: 700;
+.box-price {
+    display: flex;
+    align-items: baseline;
+    gap: 4px;
+}
+
+.price-value {
+    font-size: 24px;
+    font-weight: 800;
     color: #000;
 }
 
-.rb-box-price small {
-    font-size: 14px;
-    font-weight: 400;
+.price-unit {
+    font-size: 11px;
     color: #666;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
-/* 박스 액션 */
-.rb-box-actions {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.rb-detail-btn {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 36px;
-    height: 36px;
-    border: 1px solid #e0e0e0;
-    border-radius: 6px;
-    color: #666;
-    transition: all 0.2s;
-}
-
-.rb-detail-btn:hover {
-    background: #f8f8f8;
-    color: #000;
-    border-color: #000;
-}
-
-.rb-buy-btn {
-    padding: 8px 20px;
+/* 구매 버튼 */
+.buy-btn {
+    padding: 10px 20px;
     background: #000;
     color: #fff;
     border: none;
-    border-radius: 6px;
-    font-size: 14px;
+    font-size: 12px;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.2s;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
 }
 
-.rb-buy-btn:hover:not(:disabled) {
+.buy-btn:hover:not(.disabled) {
     background: #333;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
 }
 
-.rb-buy-btn:disabled {
+.buy-btn.disabled {
     background: #ccc;
     cursor: not-allowed;
 }
 
-/* ===================================
- * 사이드바
- * =================================== */
-.rb-sidebar {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-}
-
-/* 위젯 */
-.rb-widget {
-    background: #fff;
-    border: 1px solid #e0e0e0;
-    border-radius: 8px;
-    overflow: hidden;
-}
-
-.rb-widget-header {
-    padding: 16px 20px;
-    background: #f8f8f8;
-    border-bottom: 1px solid #e0e0e0;
+.buy-btn i {
     font-size: 14px;
-    font-weight: 700;
-    color: #000;
 }
 
-.rb-widget-body {
-    padding: 20px;
-}
-
-/* 내 통계 */
-.rb-my-stats {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-}
-
-.rb-my-stat {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.rb-my-stat-label {
-    font-size: 14px;
-    color: #666;
-}
-
-.rb-my-stat-value {
-    font-size: 18px;
-    font-weight: 700;
-    color: #000;
-}
-
-/* 실시간 당첨 */
-.rb-realtime-list {
-    display: flex;
-    flex-direction: column;
+/* 리스트 뷰 */
+.rb-box-grid.list-view {
+    grid-template-columns: 1fr;
     gap: 12px;
 }
 
-.rb-realtime-item {
+.rb-box-grid.list-view .rb-box-card {
     display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 12px;
-    background: #f8f8f8;
-    border-radius: 6px;
-    transition: all 0.2s;
+    height: 120px;
 }
 
-.rb-realtime-item:hover {
-    background: #f0f0f0;
-}
-
-.rb-realtime-avatar {
-    width: 36px;
-    height: 36px;
-    background: #000;
-    color: #fff;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 14px;
-    font-weight: 700;
+.rb-box-grid.list-view .box-image {
+    width: 120px;
+    height: 120px;
     flex-shrink: 0;
 }
 
-.rb-realtime-info {
-    flex: 1;
-    min-width: 0;
-}
-
-.rb-realtime-user {
-    font-size: 13px;
-    font-weight: 600;
-    color: #000;
-    margin-bottom: 2px;
-}
-
-.rb-realtime-prize {
-    font-size: 12px;
-    color: #666;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
-
-.rb-realtime-prize.rare {
-    color: #3498db;
-}
-
-.rb-realtime-prize.epic {
-    color: #9b59b6;
-}
-
-.rb-realtime-prize.legendary {
-    color: #e74c3c;
-}
-
-.rb-realtime-time {
-    font-size: 11px;
-    color: #999;
-}
-
-/* 인기 박스 */
-.rb-popular-list {
+.rb-box-grid.list-view .box-info {
     display: flex;
     flex-direction: column;
-    gap: 4px;
-}
-
-.rb-popular-item {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 12px;
-    color: #333;
-    text-decoration: none;
-    border-radius: 6px;
-    transition: all 0.2s;
-}
-
-.rb-popular-item:hover {
-    background: #f8f8f8;
-}
-
-.rb-popular-rank {
-    width: 24px;
-    height: 24px;
-    background: #000;
-    color: #fff;
-    border-radius: 4px;
-    display: flex;
-    align-items: center;
     justify-content: center;
-    font-size: 12px;
-    font-weight: 700;
-}
-
-.rb-popular-name {
     flex: 1;
-    font-size: 14px;
-    font-weight: 500;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
 }
 
-.rb-popular-count {
-    font-size: 12px;
+.rb-box-grid.list-view .box-footer {
+    border-top: none;
+    padding-top: 0;
+}
+
+/* 빈 상태 */
+.empty-state {
+    text-align: center;
+    padding: 100px 20px;
     color: #999;
+}
+
+.empty-state i {
+    font-size: 64px;
+    margin-bottom: 16px;
+    opacity: 0.3;
+}
+
+.empty-state p {
+    font-size: 16px;
+}
+
+/* 박스 상세 모달 */
+.rb-modal-large {
+    max-width: 900px;
+}
+
+.rb-modal-loading {
+    text-align: center;
+    padding: 60px;
+    color: #666;
+}
+
+.rb-modal-loading i {
+    font-size: 32px;
+    animation: spin 1s linear infinite;
+    margin-bottom: 12px;
 }
 
 /* ===================================
  * 반응형
  * =================================== */
 @media (max-width: 1200px) {
-    .rb-stats-bar {
-        grid-template-columns: repeat(3, 1fr);
-    }
-    
-    .rb-layout {
+    .main-grid {
         grid-template-columns: 1fr;
     }
     
-    .rb-sidebar {
-        grid-template-columns: repeat(2, 1fr);
+    .sidebar-stats {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 16px;
+    }
+    
+    .realtime-block {
+        grid-column: span 4;
     }
 }
 
 @media (max-width: 768px) {
-    .rb-stats-bar {
+    .rb-top-bar {
+        flex-direction: column;
+        gap: 16px;
+        text-align: center;
+    }
+    
+    .rb-user-info {
+        flex-direction: column;
+        gap: 16px;
+        width: 100%;
+    }
+    
+    .sidebar-stats {
         grid-template-columns: repeat(2, 1fr);
-    }
-    
-    .rb-stat {
-        padding: 16px;
-    }
-    
-    .rb-stat-value {
-        font-size: 20px;
     }
     
     .rb-box-grid {
@@ -553,17 +681,23 @@
         padding: 12px;
     }
     
-    .rb-section-header {
+    .section-header {
         flex-direction: column;
         gap: 12px;
         align-items: stretch;
     }
     
-    .rb-filter-tabs {
-        justify-content: center;
+    .filter-bar {
+        flex-wrap: wrap;
+    }
+}
+
+@media (max-width: 480px) {
+    .rb-box-grid {
+        grid-template-columns: 1fr;
     }
     
-    .rb-sidebar {
+    .sidebar-stats {
         grid-template-columns: 1fr;
     }
 }

@@ -75,26 +75,89 @@ function showPurchaseModal(boxId, boxName, boxPrice, boxImage) {
     $('#modalBoxImage').attr('src', boxImage).attr('alt', boxName);
     
     // 현재 포인트 가져오기
-    var currentPoint = parseInt($('#userPoint').text().replace(/[^0-9]/g, ''));
-    var afterPoint = currentPoint - boxPrice;
-    
-    // 현재 포인트와 구매 후 포인트 표시
-    $('#modalCurrentPoint').text(number_format(currentPoint) + 'P');
-    $('#modalAfterPoint').text(number_format(afterPoint) + 'P');
-    
-    // 포인트 부족 시 처리
-    if (afterPoint < 0) {
-        $('#modalAfterPoint').css('color', '#e74c3c');
-        $('#confirmPurchase').prop('disabled', true);
-        $('.btn-text').text('포인트 부족');
-    } else {
-        $('#modalAfterPoint').css('color', 'inherit');
-        $('#confirmPurchase').prop('disabled', false);
-        $('.btn-text').text('구매하기');
-    }
+    $.get('./ajax/get_user_point.php', function(data) {
+        if (data.status) {
+            var currentPoint = data.point;
+            var afterPoint = currentPoint - boxPrice;
+            
+            $('#modalCurrentPoint').text(number_format(currentPoint) + 'P');
+            $('#modalAfterPoint').text(number_format(afterPoint) + 'P');
+            
+            // 포인트 부족 시 처리
+            if (afterPoint < 0) {
+                $('#modalAfterPoint').css('color', '#e74c3c');
+                $('#confirmPurchase').prop('disabled', true).find('.btn-text').text('포인트 부족');
+            } else {
+                $('#modalAfterPoint').css('color', '#27ae60');
+                $('#confirmPurchase').prop('disabled', false).find('.btn-text').text('구매하기');
+            }
+        }
+    });
     
     // 모달 표시
     $('#purchaseModal').addClass('show').css('display', 'flex');
+}
+
+/**
+ * box_detail.php용 구매 처리
+ */
+function purchaseFromDetail(boxId) {
+    if (!confirm('정말 구매하시겠습니까?')) return;
+    
+    $.ajax({
+        url: './purchase.php',
+        type: 'POST',
+        data: { box_id: boxId },
+        dataType: 'json',
+        beforeSend: function() {
+            $('#purchaseButton').prop('disabled', true).html('<i class="bi bi-hourglass-split"></i> 처리중...');
+        },
+        success: function(response) {
+            if (response.status) {
+                // 결과 표시
+                showResultInDetail(response.item);
+                
+                // 포인트 업데이트
+                updateUserPoint();
+            } else {
+                alert(response.message);
+                $('#purchaseButton').prop('disabled', false).html('<i class="bi bi-cart-plus"></i> 구매하기');
+            }
+        },
+        error: function() {
+            alert('구매 처리 중 오류가 발생했습니다.');
+            $('#purchaseButton').prop('disabled', false).html('<i class="bi bi-cart-plus"></i> 구매하기');
+        }
+    });
+}
+/**
+ * 상세 페이지용 결과 표시
+ */
+function showResultInDetail(item) {
+    // 박스 오픈 애니메이션
+    $('#boxOpenAnimation').show();
+    $('#boxDetailContent').hide();
+    
+    setTimeout(function() {
+        $('#boxOpenAnimation').hide();
+        
+        // 결과 표시
+        const resultHtml = `
+            <div class="result-container">
+                <h2 class="result-title">축하합니다!</h2>
+                <div class="result-item-image">
+                    <img src="${item.image || './img/item-default.png'}" alt="${item.name}">
+                </div>
+                <h3 class="result-item-name">${item.name}</h3>
+                <div class="result-item-grade grade-${item.grade}">${getGradeName(item.grade)}</div>
+                ${item.value > 0 ? `<div class="result-item-value">+${number_format(item.value)}P 획득</div>` : ''}
+                <button class="btn btn-primary" onclick="location.reload()">다시 구매하기</button>
+                <a href="./history.php" class="btn btn-secondary">구매내역 보기</a>
+            </div>
+        `;
+        
+        $('#boxDetailContent').html(resultHtml).show();
+    }, 3000);
 }
 
 // ===================================

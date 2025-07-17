@@ -42,7 +42,7 @@ if (!defined('_GNUBOARD_')) exit;
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
 <!-- 랜덤박스 공통 스크립트 -->
-<script src="./js/randombox.common.js?v=<?php echo time(); ?>"></script>
+<script src="./randombox.js?v=<?php echo time(); ?>"></script>
 
 <!-- 페이지별 스크립트 -->
 <?php if (isset($page_script) && $page_script) : ?>
@@ -88,11 +88,11 @@ function updateUserPoint() {
     if (!g5_is_member) return;
     
     $.ajax({
-        url: g5_bbs_url + '/ajax.mb_point.php',
+        url: './ajax/get_user_point.php',
         type: 'GET',
         dataType: 'json',
         success: function(response) {
-            if (response.point !== undefined) {
+            if (response.status && response.point !== undefined) {
                 $('#userPoint').text(number_format(response.point) + 'P');
             }
         }
@@ -102,6 +102,32 @@ function updateUserPoint() {
 // 숫자 포맷 함수
 function number_format(num) {
     return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+}
+
+// 등급명 반환
+function getGradeName(grade) {
+    var names = {
+        'normal': '일반',
+        'rare': '레어',
+        'epic': '에픽',
+        'legendary': '레전더리'
+    };
+    return names[grade] || '일반';
+}
+
+// 등급 클래스 반환
+function getGradeClass(grade) {
+    return 'grade-' + grade;
+}
+
+// 박스 타입명 반환
+function getBoxTypeName(type) {
+    var names = {
+        'normal': '일반',
+        'event': '이벤트',
+        'premium': '프리미엄'
+    };
+    return names[type] || '일반';
 }
 </script>
 
