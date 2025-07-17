@@ -3,7 +3,7 @@
  * 위치: /randombox/
  * 기능: 랜덤박스 사용자 페이지 자바스크립트
  * 작성일: 2025-01-04
- * 수정일: 2025-01-04
+ * 수정일: 2025-07-07
  */
 
 // ===================================
@@ -125,6 +125,11 @@ function processPurchase() {
                 // 구매 모달 닫기
                 $('#purchaseModal').removeClass('show').hide();
                 
+                // 버튼 상태 초기화
+                $('#confirmPurchase').prop('disabled', false);
+                $('.btn-text').show().text('구매하기');
+                $('.btn-loading').hide();
+                
                 // 결과 표시
                 showResultModal(response.item);
                 
@@ -207,50 +212,30 @@ function createConfetti(grade) {
     const confettiCount = grade === 'legendary' ? 50 : 30;
     
     for (let i = 0; i < confettiCount; i++) {
+        const confetti = $('<div>').addClass('rb-confetti');
+        const color = selectedColors[Math.floor(Math.random() * selectedColors.length)];
+        const left = Math.random() * 100;
+        const animationDelay = Math.random() * 2;
+        const animationDuration = 2 + Math.random() * 2;
+        
+        confetti.css({
+            'background-color': color,
+            'left': left + '%',
+            'animation-delay': animationDelay + 's',
+            'animation-duration': animationDuration + 's'
+        });
+        
+        $('#resultModal').append(confetti);
+        
+        // 애니메이션 종료 후 제거
         setTimeout(function() {
-            const confetti = $('<div class="confetti"></div>');
-            const color = selectedColors[Math.floor(Math.random() * selectedColors.length)];
-            const left = Math.random() * 100;
-            const animationDuration = Math.random() * 3 + 2;
-            const animationDelay = Math.random() * 0.5;
-            
-            confetti.css({
-                'background-color': color,
-                'left': left + '%',
-                'animation-duration': animationDuration + 's',
-                'animation-delay': animationDelay + 's',
-                'width': Math.random() * 10 + 5 + 'px',
-                'height': Math.random() * 10 + 5 + 'px'
-            });
-            
-            $('#confetti').append(confetti);
-            
-            // 애니메이션 종료 후 제거
-            setTimeout(function() {
-                confetti.remove();
-            }, (animationDuration + animationDelay) * 1000);
-        }, i * 50);
+            confetti.remove();
+        }, (animationDelay + animationDuration) * 1000);
     }
 }
 
-/**
- * 등급별 사운드 재생 (옵션)
- */
-function playGradeSound(grade) {
-    // 사운드 파일이 있는 경우에만 실행
-    const sounds = {
-        normal: 'normal.mp3',
-        rare: 'rare.mp3',
-        epic: 'epic.mp3',
-        legendary: 'legendary.mp3'
-    };
-    
-    // 사운드 파일이 존재하는지 확인 후 재생
-    // 실제 구현 시에는 사운드 파일을 추가해주세요
-}
-
 // ===================================
-// 유틸리티 함수
+// 유틸리티
 // ===================================
 
 /**
@@ -258,15 +243,29 @@ function playGradeSound(grade) {
  */
 function closeModal() {
     $('.rb-modal').removeClass('show').hide();
+    
+    // 버튼 상태 초기화
+    $('#confirmPurchase').prop('disabled', false);
+    $('.btn-text').show().text('구매하기');
+    $('.btn-loading').hide();
+    
+    // 현재 박스 정보 초기화
+    currentBoxId = null;
+    currentBoxData = {};
 }
 
 /**
  * 사용자 포인트 업데이트
  */
 function updateUserPoint() {
-    $.get('./ajax/get_user_point.php', function(data) {
-        if (data.status) {
-            $('#userPoint').text(number_format(data.point) + 'P');
+    $.ajax({
+        url: g5_url + '/bbs/ajax.mb_point.php',
+        type: 'GET',
+        dataType: 'json',
+        success: function(response) {
+            if (response.point !== undefined) {
+                $('#userPoint').text(number_format(response.point) + 'P');
+            }
         }
     });
 }
@@ -275,25 +274,164 @@ function updateUserPoint() {
  * 숫자 포맷
  */
 function number_format(num) {
-    return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 }
 
 /**
  * 등급명 반환
  */
 function getGradeName(grade) {
-    var names = {
-        'normal': '일반',
+    const grades = {
+        'normal': '노멀',
         'rare': '레어',
         'epic': '에픽',
         'legendary': '레전더리'
     };
-    return names[grade] || '일반';
+    return grades[grade] || '노멀';
 }
 
 /**
- * 등급 클래스 반환
+ * 등급 클래스명 반환
  */
 function getGradeClass(grade) {
-    return 'grade-' + grade;
+    return 'rb-grade-' + grade;
+}
+
+/**
+ * 등급별 사운드 재생 (옵션)
+ */
+function playGradeSound(grade) {
+    // 사운드 재생 기능 (필요시 구현)
+}
+
+// ===================================
+// 구매내역 페이지 (history.php용)
+// ===================================
+
+/* 구매내역 관련 변수 */
+var historyPage = 1;
+var historyLoading = false;
+var historyHasMore = true;
+
+/* 구매내역 필터 및 조회 */
+function loadHistory(reset) {
+    if (historyLoading) return;
+    
+    if (reset) {
+        historyPage = 1;
+        historyHasMore = true;
+    }
+    
+    if (!historyHasMore) return;
+    
+    historyLoading = true;
+    
+    const filters = {
+        start_date: $('#startDate').val(),
+        end_date: $('#endDate').val(),
+        rb_id: $('#filterBox').val(),
+        grade: $('#filterGrade').val(),
+        page: historyPage
+    };
+    
+    $.ajax({
+        url: './ajax.history.php',
+        type: 'GET',
+        data: filters,
+        dataType: 'json',
+        success: function(response) {
+            if (response.status) {
+                // 통계 업데이트
+                updateHistoryStats(response.stats);
+                
+                // 리스트 표시
+                if (historyPage === 1) {
+                    displayHistoryList(response.list);
+                } else {
+                    appendHistoryList(response.list);
+                }
+                
+                // 더보기 버튼 표시 여부
+                if (response.list.length < 20 || historyPage >= response.total_pages) {
+                    historyHasMore = false;
+                    $('#historyMore').hide();
+                } else {
+                    $('#historyMore').show();
+                }
+            }
+        },
+        error: function() {
+            if (historyPage === 1) {
+                $('#historyList').html('<div class="rb-history-empty"><i class="bi bi-exclamation-circle"></i><p>데이터를 불러올 수 없습니다.</p></div>');
+            }
+        },
+        complete: function() {
+            historyLoading = false;
+        }
+    });
+}
+
+/**
+ * 통계 업데이트
+ */
+function updateHistoryStats(stats) {
+    $('#historyTotalCount').text(number_format(stats.total_count || 0) + '회');
+    $('#historyTotalSpent').text(number_format(stats.total_spent || 0) + 'P');
+    $('#historyTotalEarned').text(number_format(stats.total_earned || 0) + 'P');
+    $('#historyRareCount').text(number_format(stats.rare_count || 0) + '개');
+}
+
+/**
+ * 내역 리스트 표시
+ */
+function displayHistoryList(list) {
+    if (!list || list.length === 0) {
+        $('#historyList').html('<div class="rb-history-empty"><i class="bi bi-inbox"></i><p>구매 내역이 없습니다.</p></div>');
+        return;
+    }
+    
+    const html = list.map(item => createHistoryItemHtml(item)).join('');
+    $('#historyList').html(html);
+}
+
+/**
+ * 내역 리스트 추가
+ */
+function appendHistoryList(list) {
+    if (!list || list.length === 0) return;
+    
+    const html = list.map(item => createHistoryItemHtml(item)).join('');
+    $('#historyList').append(html);
+}
+
+/**
+ * 내역 아이템 HTML 생성
+ */
+function createHistoryItemHtml(item) {
+    const itemImage = item.item_image || './img/item-default.png';
+    const date = new Date(item.purchase_date);
+    const dateStr = (date.getMonth() + 1).toString().padStart(2, '0') + '.' 
+                  + date.getDate().toString().padStart(2, '0');
+    const timeStr = date.getHours().toString().padStart(2, '0') + ':' 
+                  + date.getMinutes().toString().padStart(2, '0');
+    
+    return `
+        <div class="rb-history-item">
+            <div class="rb-history-date">
+                <div>${dateStr}</div>
+                <div class="rb-history-time">${timeStr}</div>
+            </div>
+            <div class="rb-history-info">
+                <div class="rb-history-box">${item.box_name}</div>
+                <div class="rb-history-result">
+                    <img src="${itemImage}" alt="${item.item_name}">
+                    <span class="${getGradeClass(item.item_grade)}">${item.item_name}</span>
+                </div>
+            </div>
+            <div class="rb-history-point">
+                <div class="rb-history-spent">-${number_format(item.box_price)}P</div>
+                ${item.item_value > 0 ? `<div class="rb-history-earned">+${number_format(item.item_value)}P</div>` : ''}
+            </div>
+        </div>
+    `;
 }
