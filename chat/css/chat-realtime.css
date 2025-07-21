@@ -1,0 +1,419 @@
+/*
+ * 파일명: chat-realtime.css
+ * 위치: /chat/css/chat-realtime.css
+ * 기능: 실시간 채팅 추가 스타일
+ * 작성일: 2025-07-13
+ */
+
+/* ===================================
+ * 실시간 상태 표시
+ * ===================================
+ */
+/* 임시 메시지 스타일 */
+.message-item.temp-message {
+    opacity: 0.7;
+}
+
+.message-item.temp-message .message-bubble {
+    position: relative;
+}
+
+.sending-indicator {
+    color: #999;
+    font-size: 11px;
+    font-style: italic;
+    margin-left: 5px;
+}
+
+/* 연결 상태 표시 */
+.connection-status {
+    position: fixed;
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #333;
+    color: white;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 13px;
+    display: none;
+    z-index: 2002;
+    animation: slideDown 0.3s ease;
+}
+
+.connection-status.show {
+    display: block;
+}
+
+.connection-status.success {
+    background: #28a745;
+}
+
+.connection-status.error {
+    background: #dc3545;
+}
+
+.connection-status.warning {
+    background: #ffc107;
+    color: #333;
+}
+
+@keyframes slideDown {
+    from {
+        transform: translateX(-50%) translateY(-100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(-50%) translateY(0);
+        opacity: 1;
+    }
+}
+
+/* ===================================
+ * 실시간 타이핑 표시
+ * ===================================
+ */
+.typing-indicator-container {
+    padding: 10px 24px;
+    min-height: 30px;
+}
+
+.typing-user {
+    display: inline-block;
+    padding: 4px 12px;
+    background: #f0f0f0;
+    border-radius: 15px;
+    font-size: 13px;
+    color: #666;
+    margin-right: 8px;
+    animation: fadeIn 0.2s ease;
+}
+
+.typing-user .typing-dots {
+    display: inline-flex;
+    gap: 2px;
+    margin-left: 5px;
+}
+
+.typing-user .typing-dots span {
+    width: 3px;
+    height: 3px;
+    background: #666;
+    border-radius: 50%;
+    animation: typing 1.4s infinite;
+}
+
+/* ===================================
+ * 메시지 전송 상태
+ * ===================================
+ */
+.message-status {
+    position: absolute;
+    bottom: -18px;
+    right: 0;
+    font-size: 11px;
+    color: #999;
+}
+
+.message-status.sent {
+    color: #666;
+}
+
+.message-status.delivered {
+    color: #28a745;
+}
+
+.message-status.read {
+    color: #007bff;
+}
+
+.message-status i {
+    font-size: 10px;
+}
+
+/* ===================================
+ * 새 메시지 알림
+ * ===================================
+ */
+.new-message-divider {
+    text-align: center;
+    margin: 20px 0;
+    position: relative;
+}
+
+.new-message-divider::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: #dc3545;
+}
+
+.new-message-divider span {
+    background: #fafafa;
+    padding: 0 15px;
+    color: #dc3545;
+    font-size: 12px;
+    font-weight: 500;
+    position: relative;
+}
+
+/* 새 메시지 개수 뱃지 */
+.unread-badge {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background: #dc3545;
+    color: white;
+    font-size: 11px;
+    font-weight: bold;
+    padding: 2px 6px;
+    border-radius: 10px;
+    min-width: 18px;
+    text-align: center;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.1);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+/* ===================================
+ * 빠른 답장 버튼
+ * ===================================
+ */
+.quick-reply-container {
+    padding: 10px 24px;
+    background: #f8f9fa;
+    border-top: 1px solid #e0e0e0;
+    display: none;
+}
+
+.quick-reply-container.show {
+    display: block;
+}
+
+.quick-reply-buttons {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.quick-reply-btn {
+    padding: 6px 12px;
+    background: white;
+    border: 1px solid #e0e0e0;
+    border-radius: 20px;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.quick-reply-btn:hover {
+    background: #000;
+    color: white;
+    border-color: #000;
+}
+
+/* ===================================
+ * 메시지 애니메이션 개선
+ * ===================================
+ */
+.message-item {
+    animation: messageSlideIn 0.2s ease;
+    transform-origin: bottom;
+}
+
+.message-item.my-message {
+    animation: myMessageSlideIn 0.2s ease;
+}
+
+@keyframes messageSlideIn {
+    from {
+        opacity: 0;
+        transform: translateX(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes myMessageSlideIn {
+    from {
+        opacity: 0;
+        transform: translateX(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* ===================================
+ * 실시간 사용자 상태
+ * ===================================
+ */
+.user-item .user-status {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    transition: all 0.3s ease;
+}
+
+.user-status.online {
+    background: #28a745;
+    box-shadow: 0 0 0 2px rgba(40, 167, 69, 0.2);
+}
+
+.user-status.idle {
+    background: #ffc107;
+}
+
+.user-status.offline {
+    background: #dc3545;
+}
+
+/* 마지막 활동 시간 */
+.user-last-seen {
+    font-size: 11px;
+    color: #999;
+    margin-top: 2px;
+}
+
+/* ===================================
+ * 메시지 로딩 스켈레톤
+ * ===================================
+ */
+.message-skeleton {
+    padding: 10px 24px;
+    animation: skeleton-loading 1s linear infinite alternate;
+}
+
+.skeleton-avatar {
+    width: 36px;
+    height: 36px;
+    background: #e0e0e0;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+.skeleton-content {
+    display: inline-block;
+    margin-left: 12px;
+    vertical-align: top;
+}
+
+.skeleton-info {
+    width: 150px;
+    height: 12px;
+    background: #e0e0e0;
+    border-radius: 6px;
+    margin-bottom: 8px;
+}
+
+.skeleton-message {
+    width: 250px;
+    height: 40px;
+    background: #e0e0e0;
+    border-radius: 8px;
+}
+
+@keyframes skeleton-loading {
+    0% {
+        opacity: 0.7;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
+/* ===================================
+ * 네트워크 상태 표시
+ * ===================================
+ */
+.network-indicator {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 12px;
+    color: #666;
+}
+
+.network-indicator i {
+    font-size: 14px;
+}
+
+.network-indicator.good {
+    color: #28a745;
+}
+
+.network-indicator.poor {
+    color: #ffc107;
+}
+
+.network-indicator.offline {
+    color: #dc3545;
+}
+
+/* ===================================
+ * 모바일 최적화
+ * ===================================
+ */
+@media (max-width: 768px) {
+    .message-area {
+        /* 모바일에서 부드러운 스크롤 */
+        -webkit-overflow-scrolling: touch;
+        scroll-behavior: smooth;
+    }
+    
+    .message-item {
+        /* 터치 영역 확대 */
+        padding: 4px 12px;
+    }
+    
+    .message-actions {
+        /* 모바일에서 항상 표시 */
+        opacity: 1;
+        visibility: visible;
+    }
+    
+    /* 빠른 스크롤을 위한 will-change */
+    .message-area {
+        will-change: scroll-position;
+    }
+}
+
+/* ===================================
+ * 성능 최적화
+ * ===================================
+ */
+/* GPU 가속 활용 */
+.message-item,
+.message-bubble {
+    transform: translateZ(0);
+    backface-visibility: hidden;
+}
+
+/* 애니메이션 최적화 */
+.message-area {
+    contain: layout style paint;
+}
+
+/* 리플로우 최소화 */
+.message-content {
+    contain: layout;
+}
