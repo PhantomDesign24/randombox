@@ -407,6 +407,7 @@ function purchase_randombox($rb_id, $mb_id) {
                 rbi_name = '{$item['rbi_name']}',
                 rbi_grade = '{$item['rbi_grade']}',
                 rbi_value = '{$item['rbi_value']}',
+                rbh_item_type = '{$item['rbi_item_type']}',
                 rbh_status = 'completed',
                 rbh_ip = '{$_SERVER['REMOTE_ADDR']}',
                 rbh_created_at = '$now'";
@@ -415,19 +416,104 @@ function purchase_randombox($rb_id, $mb_id) {
             throw new Exception('구매 기록 저장에 실패했습니다.');
         }
         
+        $rbh_id = sql_insert_id(); // 히스토리 ID 저장
+        
         // 박스 판매 수량 증가
         sql_query("UPDATE {$g5['g5_prefix']}randombox SET rb_sold_qty = rb_sold_qty + 1 WHERE rb_id = '$rb_id'");
         
         // 아이템 배출 수량 증가
         sql_query("UPDATE {$g5['g5_prefix']}randombox_items SET rbi_issued_qty = rbi_issued_qty + 1 WHERE rbi_id = '{$item['rbi_id']}'");
         
-        // 아이템 가치만큼 포인트 지급
-        if ($item['rbi_value'] > 0) {
-            insert_point($mb_id, $item['rbi_value'], "랜덤박스 아이템 획득: {$item['rbi_name']}");
+        // 아이템 타입에 따른 처리
+        if ($item['rbi_item_type'] == 'coupon') {
+            // 교환권 발급
+            if (!$item['rct_id']) {
+                throw new Exception('교환권 타입이 설정되지 않았습니다.');
+            }
+            
+            // 교환권 타입 정보 조회
+            $sql = "SELECT * FROM {$g5['g5_prefix']}randombox_coupon_types WHERE rct_id = '{$item['rct_id']}'";
+            $coupon_type = sql_fetch($sql);
+            
+            if (!$coupon_type) {
+                throw new Exception('존재하지 않는 교환권 타입입니다.');
+            }
+            
+            $rcc_id = null;
+            
+            // 기프티콘인 경우 사용 가능한 코드 할당
+            if ($coupon_type['rct_type'] == 'gifticon') {
+                $sql = "SELECT rcc_id FROM {$g5['g5_prefix']}randombox_coupon_codes 
+                        WHERE rct_id = '{$item['rct_id']}' 
+                        AND rcc_status = 'available' 
+                        ORDER BY rcc_id 
+                        LIMIT 1 
+                        FOR UPDATE"; // 동시성 제어를 위한 FOR UPDATE
+                
+                $code = sql_fetch($sql);
+                
+                if (!$code) {
+                    throw new Exception('사용 가능한 교환권 코드가 없습니다.');
+                }
+                
+                $rcc_id = $code['rcc_id'];
+                
+                // 코드 상태 업데이트
+                $sql = "UPDATE {$g5['g5_prefix']}randombox_coupon_codes SET
+                        rcc_status = 'issued',
+                        rcc_used_by = '$mb_id'
+                        WHERE rcc_id = '{$rcc_id}'";
+                
+                if (!sql_query($sql)) {
+                    throw new Exception('코드 할당에 실패했습니다.');
+                }
+            }
+            
+            // 회원 교환권 발급
+            $expire_date = null;
+            if ($coupon_type['rct_type'] == 'gifticon' && $code['rcc_expire_date']) {
+                $expire_date = $code['rcc_expire_date'];
+            } else {
+                // 교환용은 30일 유효기간 (설정 가능하게 변경 가능)
+                $expire_date = date('Y-m-d', strtotime('+30 days'));
+            }
+            
+            $sql = "INSERT INTO {$g5['g5_prefix']}randombox_member_coupons SET
+                    mb_id = '$mb_id',
+                    rct_id = '{$item['rct_id']}',
+                    rcc_id = " . ($rcc_id ? "'$rcc_id'" : "NULL") . ",
+                    rbh_id = '$rbh_id',
+                    rmc_status = 'active',
+                    rmc_expire_date = " . ($expire_date ? "'$expire_date'" : "NULL") . ",
+                    rmc_created_at = '$now'";
+            
+            if (!sql_query($sql)) {
+                throw new Exception('교환권 발급에 실패했습니다.');
+            }
+            
+            $rmc_id = sql_insert_id();
+            
+            // 히스토리에 교환권 ID 업데이트
+            sql_query("UPDATE {$g5['g5_prefix']}randombox_history SET rmc_id = '$rmc_id' WHERE rbh_id = '$rbh_id'");
+            
+            // 교환권 가치만큼 가상의 포인트 기록 (통계용)
+            $item['rbi_value'] = $coupon_type['rct_value'];
+            
+        } else {
+            // 포인트 지급
+            if ($item['rbi_value'] > 0) {
+                insert_point($mb_id, $item['rbi_value'], "랜덤박스 아이템 획득: {$item['rbi_name']}");
+            }
         }
         
         // 커밋
         sql_query("COMMIT");
+        
+        // 아이템 정보에 교환권 정보 추가 (응답용)
+        if ($item['rbi_item_type'] == 'coupon') {
+            $item['coupon_type'] = $coupon_type;
+            $item['coupon_id'] = $rmc_id;
+        }
         
         return array(
             'status' => true, 

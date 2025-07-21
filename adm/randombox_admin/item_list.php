@@ -54,9 +54,11 @@ $total_page = ceil($total_count / $rows);
 $from_record = ($page - 1) * $rows;
 
 /* 목록 조회 */
-$sql = "SELECT * FROM {$g5['g5_prefix']}randombox_items 
-        WHERE rb_id = '{$rb_id}' 
-        ORDER BY rbi_order, rbi_grade DESC, rbi_id DESC 
+$sql = "SELECT i.*, ct.rct_name, ct.rct_exchange_item, ct.rct_value as coupon_value
+        FROM {$g5['g5_prefix']}randombox_items i
+        LEFT JOIN {$g5['g5_prefix']}randombox_coupon_types ct ON i.rct_id = ct.rct_id
+        WHERE i.rb_id = '{$rb_id}' 
+        ORDER BY i.rbi_order, i.rbi_grade DESC, i.rbi_id DESC 
         LIMIT {$from_record}, {$rows}";
 $result = sql_query($sql);
 

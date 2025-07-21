@@ -94,6 +94,19 @@ $available_probability = 100 - $used_probability;
             </td>
         </tr>
         <tr>
+            <th scope="row"><label for="rbi_item_type">아이템 타입</label> <span class="required">필수</span></th>
+            <td>
+                <select name="rbi_item_type" id="rbi_item_type" class="frm_input" required onchange="changeItemType(this.value)">
+                    <option value="point" <?php echo ($item['rbi_item_type'] == 'point') ? 'selected' : ''; ?>>포인트</option>
+                    <option value="coupon" <?php echo ($item['rbi_item_type'] == 'coupon') ? 'selected' : ''; ?>>교환권</option>
+                </select>
+                <span class="frm_info">
+                    포인트: 획득 시 포인트 지급<br>
+                    교환권: 획득 시 교환권 발급
+                </span>
+            </td>
+        </tr>
+        <tr>
             <th scope="row"><label for="rbi_grade">등급</label> <span class="required">필수</span></th>
             <td>
                 <select name="rbi_grade" id="rbi_grade" class="frm_input" required>

@@ -61,10 +61,38 @@ if ($rbi_probability > $available_probability) {
 $rbi_name = strip_tags($_POST['rbi_name']);
 $rbi_desc = $_POST['rbi_desc'];
 $rbi_grade = $_POST['rbi_grade'];
+$rbi_item_type = $_POST['rbi_item_type'];
+$rct_id = (int)$_POST['rct_id'];
+$rbi_probability = (float)$_POST['rbi_probability'];
 $rbi_value = (int)$_POST['rbi_value'];
 $rbi_limit_qty = (int)$_POST['rbi_limit_qty'];
 $rbi_status = (int)$_POST['rbi_status'];
 $rbi_order = (int)$_POST['rbi_order'];
+
+// 아이템 타입별 검증
+if ($rbi_item_type == 'coupon') {
+    if (!$rct_id) {
+        alert('교환권 타입을 선택하세요.');
+    }
+    
+    // 기프티콘인 경우 재고 확인
+    $sql = "SELECT rct_type FROM {$g5['g5_prefix']}randombox_coupon_types WHERE rct_id = '{$rct_id}'";
+    $coupon_type = sql_fetch($sql);
+    
+    if ($coupon_type['rct_type'] == 'gifticon') {
+        $sql = "SELECT COUNT(*) as cnt FROM {$g5['g5_prefix']}randombox_coupon_codes 
+                WHERE rct_id = '{$rct_id}' AND rcc_status = 'available'";
+        $stock = sql_fetch($sql);
+        
+        if ($stock['cnt'] == 0) {
+            alert('선택한 기프티콘의 사용 가능한 코드가 없습니다. 코드를 먼저 등록해주세요.');
+        }
+    }
+    
+    $rbi_value = 0; // 교환권은 포인트 가치 0
+} else {
+    $rct_id = 0; // 포인트 타입은 교환권 ID 0
+}
 
 /* 등급 유효성 체크 */
 $valid_grades = array('normal', 'rare', 'epic', 'legendary');

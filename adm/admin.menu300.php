@@ -17,3 +17,4 @@ $menu['menu300'][] = array('300915', '등급 관리', G5_ADMIN_URL . '/randombox
 $menu['menu300'][] = array('300920', '박스 관리', G5_ADMIN_URL . '/randombox_admin/box_list.php', 'randombox_box');
 $menu['menu300'][] = array('300930', '아이템 관리', G5_ADMIN_URL . '/randombox_admin/item_list.php', 'randombox_item');
 $menu['menu300'][] = array('300940', '통계 관리', G5_ADMIN_URL . '/randombox_admin/statistics.php', 'randombox_stats');
+$menu['menu300'][] = array('300950', '교환권 관리', G5_ADMIN_URL . '/randombox_admin/coupon_list.php', 'randombox_coupon');
