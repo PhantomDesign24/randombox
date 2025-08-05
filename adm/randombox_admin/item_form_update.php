@@ -4,6 +4,7 @@
  * 위치: /adm/randombox_admin/
  * 기능: 랜덤박스 아이템 등록/수정 처리
  * 작성일: 2025-01-04
+ * 수정일: 2025-07-21 (교환권 필드 추가)
  */
 
 $sub_menu = "300930";
@@ -12,15 +13,15 @@ include_once(G5_PLUGIN_PATH.'/randombox/randombox.lib.php');
 
 auth_check($auth[$sub_menu], 'w');
 
+// ===================================
+// 파라미터 받기
+// ===================================
+
+$w = $_POST['w'];
 $rb_id = (int)$_POST['rb_id'];
 $rbi_id = (int)$_POST['rbi_id'];
-$w = $_POST['w'];
 
-// ===================================
-// 입력값 검증
-// ===================================
-
-/* 박스 확인 */
+// 박스 정보 확인
 if (!$rb_id) {
     alert('박스를 선택해 주세요.');
 }
@@ -30,122 +31,114 @@ if (!$box) {
     alert('존재하지 않는 박스입니다.');
 }
 
-/* 필수 입력값 체크 */
-if (!$_POST['rbi_name']) {
-    alert('아이템명을 입력하세요.');
-}
-
-$rbi_probability = (float)$_POST['rbi_probability'];
-if ($rbi_probability <= 0 || $rbi_probability > 100) {
-    alert('확률은 0보다 크고 100 이하로 입력하세요.');
-}
-
-/* 확률 합계 체크 */
-$sql = "SELECT SUM(rbi_probability) as total_prob 
-        FROM {$g5['g5_prefix']}randombox_items 
-        WHERE rb_id = '$rb_id' 
-        " . ($w == 'u' ? "AND rbi_id != '$rbi_id'" : "");
-$row = sql_fetch($sql);
-$used_probability = $row['total_prob'] ? $row['total_prob'] : 0;
-$available_probability = 100 - $used_probability;
-
-if ($rbi_probability > $available_probability) {
-    alert('사용 가능한 확률(' . number_format($available_probability, 6) . '%)을 초과했습니다.');
+// 수정 모드인 경우 아이템 확인
+if ($w == 'u') {
+    if (!$rbi_id) {
+        alert('잘못된 접근입니다.');
+    }
+    
+    $sql = "SELECT * FROM {$g5['g5_prefix']}randombox_items WHERE rbi_id = '$rbi_id' AND rb_id = '$rb_id'";
+    $item = sql_fetch($sql);
+    if (!$item) {
+        alert('존재하지 않는 아이템입니다.');
+    }
 }
 
 // ===================================
-// 데이터 준비
+// 입력값 처리
 // ===================================
 
-/* 입력값 정리 */
-$rbi_name = strip_tags($_POST['rbi_name']);
-$rbi_desc = $_POST['rbi_desc'];
+/* 기본 정보 */
+$rbi_name = trim($_POST['rbi_name']);
+$rbi_desc = trim($_POST['rbi_desc']);
 $rbi_grade = $_POST['rbi_grade'];
-$rbi_item_type = $_POST['rbi_item_type'];
-$rct_id = (int)$_POST['rct_id'];
 $rbi_probability = (float)$_POST['rbi_probability'];
 $rbi_value = (int)$_POST['rbi_value'];
 $rbi_limit_qty = (int)$_POST['rbi_limit_qty'];
 $rbi_status = (int)$_POST['rbi_status'];
 $rbi_order = (int)$_POST['rbi_order'];
 
-// 아이템 타입별 검증
-if ($rbi_item_type == 'coupon') {
+/* 아이템 타입 관련 */
+$rbi_item_type = $_POST['rbi_item_type'] ? $_POST['rbi_item_type'] : 'point';
+$rct_id = null;
+
+/* 포인트 타입 관련 */
+$rbi_point_random = 0;
+$rbi_point_min = 0;
+$rbi_point_max = 0;
+
+if ($rbi_item_type == 'point') {
+    // 포인트 타입인 경우
+    if ($box['rb_point_type'] == 'random') {
+        $rbi_point_random = 1;
+        $rbi_point_min = (int)($box['rb_price'] * $box['rb_point_min_multiplier']);
+        $rbi_point_max = (int)($box['rb_price'] * $box['rb_point_max_multiplier']);
+        $rbi_value = 0; // 랜덤 포인트는 고정값 없음
+    }
+} else if ($rbi_item_type == 'coupon') {
+    // 교환권 타입인 경우
+    $rct_id = (int)$_POST['rct_id'];
     if (!$rct_id) {
-        alert('교환권 타입을 선택하세요.');
+        alert('교환권 타입을 선택해 주세요.');
     }
     
-    // 기프티콘인 경우 재고 확인
-    $sql = "SELECT rct_type FROM {$g5['g5_prefix']}randombox_coupon_types WHERE rct_id = '{$rct_id}'";
+    // 교환권 타입 확인
+    $sql = "SELECT * FROM {$g5['g5_prefix']}randombox_coupon_types WHERE rct_id = '{$rct_id}' AND rct_status = 1";
     $coupon_type = sql_fetch($sql);
-    
-    if ($coupon_type['rct_type'] == 'gifticon') {
-        $sql = "SELECT COUNT(*) as cnt FROM {$g5['g5_prefix']}randombox_coupon_codes 
-                WHERE rct_id = '{$rct_id}' AND rcc_status = 'available'";
-        $stock = sql_fetch($sql);
-        
-        if ($stock['cnt'] == 0) {
-            alert('선택한 기프티콘의 사용 가능한 코드가 없습니다. 코드를 먼저 등록해주세요.');
-        }
+    if (!$coupon_type) {
+        alert('유효하지 않은 교환권 타입입니다.');
     }
     
-    $rbi_value = 0; // 교환권은 포인트 가치 0
-} else {
-    $rct_id = 0; // 포인트 타입은 교환권 ID 0
-}
-
-/* 등급 유효성 체크 */
-$valid_grades = array('normal', 'rare', 'epic', 'legendary');
-if (!in_array($rbi_grade, $valid_grades)) {
-    $rbi_grade = 'normal';
+    $rbi_value = 0; // 교환권은 포인트 가치 없음
 }
 
 // ===================================
-// 이미지 처리
+// 입력값 검증
 // ===================================
 
-/* 이미지 업로드 디렉토리 */
-$data_dir = G5_DATA_PATH.'/randombox/item';
-$data_url = G5_DATA_URL.'/randombox/item';
-
-/* 디렉토리 생성 */
-if (!is_dir($data_dir)) {
-    @mkdir($data_dir, 0755, true);
+if (!$rbi_name) {
+    alert('아이템명을 입력해 주세요.');
 }
 
-/* 기존 이미지 정보 */
-$rbi_image = '';
-if ($w == 'u') {
-    $sql = "SELECT * FROM {$g5['g5_prefix']}randombox_items WHERE rbi_id = '$rbi_id' AND rb_id = '$rb_id'";
-    $item = sql_fetch($sql);
-    if (!$item) {
-        alert('존재하지 않는 아이템입니다.');
-    }
-    $rbi_image = $item['rbi_image'];
+if ($rbi_probability <= 0 || $rbi_probability > 100) {
+    alert('확률은 0보다 크고 100 이하여야 합니다.');
+}
+
+// 수정 모드인 경우 현재 확률 제외한 합계 계산
+$exclude_id = ($w == 'u') ? $rbi_id : 0;
+$sql = "SELECT SUM(rbi_probability) as total_prob 
+        FROM {$g5['g5_prefix']}randombox_items 
+        WHERE rb_id = '$rb_id' 
+        " . ($exclude_id ? "AND rbi_id != '$exclude_id'" : "");
+$row = sql_fetch($sql);
+$current_total = $row['total_prob'] ? $row['total_prob'] : 0;
+
+if (($current_total + $rbi_probability) > 100) {
+    alert('전체 확률의 합이 100%를 초과할 수 없습니다.\\n현재 사용 가능한 확률: ' . (100 - $current_total) . '%');
+}
+
+// ===================================
+// 이미지 업로드 처리
+// ===================================
+
+$rbi_image = $item['rbi_image'] ? $item['rbi_image'] : '';
+
+if ($_FILES['rbi_image']['name']) {
+    $data_dir = G5_DATA_PATH.'/randombox/item';
     
-    // 수량 제한 체크
-    if ($rbi_limit_qty > 0 && $item['rbi_issued_qty'] > $rbi_limit_qty) {
-        alert('최대 배출 수량은 이미 배출된 수량(' . $item['rbi_issued_qty'] . '개)보다 적을 수 없습니다.');
+    // 디렉토리 체크
+    if (!is_dir($data_dir)) {
+        @mkdir($data_dir, G5_DIR_PERMISSION);
+        @chmod($data_dir, G5_DIR_PERMISSION);
     }
-}
-
-/* 이미지 삭제 처리 */
-if (isset($_POST['rbi_image_del']) && $_POST['rbi_image_del']) {
-    if ($rbi_image && file_exists($data_dir.'/'.$rbi_image)) {
-        @unlink($data_dir.'/'.$rbi_image);
-    }
-    $rbi_image = '';
-}
-
-/* 이미지 업로드 처리 */
-if (isset($_FILES['rbi_image']) && $_FILES['rbi_image']['name']) {
-    $tmp_name = $_FILES['rbi_image']['tmp_name'];
+    
     $filename = $_FILES['rbi_image']['name'];
+    $tmp_name = $_FILES['rbi_image']['tmp_name'];
     
     // 확장자 체크
     $ext = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
     if (!in_array($ext, array('jpg', 'jpeg', 'png', 'gif'))) {
-        alert('이미지는 jpg, png, gif 파일만 업로드 가능합니다.');
+        alert('이미지 파일만 업로드 가능합니다.');
     }
     
     // 파일명 생성
@@ -178,8 +171,13 @@ if ($w == '') {
             rbi_desc = '{$rbi_desc}',
             rbi_image = '{$rbi_image}',
             rbi_grade = '{$rbi_grade}',
+            rbi_item_type = '{$rbi_item_type}',
+            rct_id = " . ($rct_id ? "'{$rct_id}'" : "NULL") . ",
             rbi_probability = '{$rbi_probability}',
             rbi_value = '{$rbi_value}',
+            rbi_point_random = '{$rbi_point_random}',
+            rbi_point_min = '{$rbi_point_min}',
+            rbi_point_max = '{$rbi_point_max}',
             rbi_limit_qty = '{$rbi_limit_qty}',
             rbi_issued_qty = 0,
             rbi_status = '{$rbi_status}',
@@ -199,8 +197,13 @@ if ($w == '') {
             rbi_desc = '{$rbi_desc}',
             rbi_image = '{$rbi_image}',
             rbi_grade = '{$rbi_grade}',
+            rbi_item_type = '{$rbi_item_type}',
+            rct_id = " . ($rct_id ? "'{$rct_id}'" : "NULL") . ",
             rbi_probability = '{$rbi_probability}',
             rbi_value = '{$rbi_value}',
+            rbi_point_random = '{$rbi_point_random}',
+            rbi_point_min = '{$rbi_point_min}',
+            rbi_point_max = '{$rbi_point_max}',
             rbi_limit_qty = '{$rbi_limit_qty}',
             rbi_status = '{$rbi_status}',
             rbi_order = '{$rbi_order}',
